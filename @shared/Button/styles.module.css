@@ -1,0 +1,43 @@
+.root {
+    @apply text-[#56616B] text-xs cursor-pointer font-semibold flex items-center justify-center relative overflow-hidden gap-2;
+  }
+  
+  .outlined {
+    @apply border border-[#EFF1F6] bg-transparent font-bold text-[#000]
+  }
+  
+  .contained, .outlined {
+    @apply rounded-full;
+  }
+  
+  .contained.small, .outlined.small {
+    @apply py-1.5 px-4;
+  }
+  
+  .contained.medium, .outlined.medium {
+    @apply py-2.5 px-4;
+  }
+  
+  .contained.large, .outlined.large {
+    @apply py-3 px-6;
+  }
+  
+  .text.large {
+    @apply text-lg;
+  }
+  
+  .text.medium {
+    @apply text-sm;
+  }
+  
+  .text.small {
+    @apply !text-xs;
+  }
+  
+  .contained.primary {
+    @apply bg-green-600 text-white;
+  }
+  
+  .contained.secondary {
+    @apply bg-red-600 text-white font-bold;
+  }
