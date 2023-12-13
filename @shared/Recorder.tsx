@@ -25,7 +25,8 @@ const Recorder: FC = () => {
     if (mediaRecorder.current) {
       mediaRecorder.current.onstop = (e) => {
         if (chunks) {
-          const blob = new Blob(chunks, { type: "audio/mpeg" });
+          const blob = new Blob(chunks, { type: "audio/mp3" });
+          
           const audioURL = URL.createObjectURL(blob);
 
           if (audioRef.current) {
@@ -75,7 +76,7 @@ const Recorder: FC = () => {
         });
 
         const mediaRecorder_ = new MediaRecorder(audioStream, {
-          mimeType: "audio/webm;codecs=opus",
+          mimeType: "audio/webm",
         });
 
         mediaRecorder.current = mediaRecorder_;
