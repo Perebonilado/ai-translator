@@ -25,7 +25,7 @@ const Recorder: FC = () => {
     if (mediaRecorder.current) {
       mediaRecorder.current.onstop = (e) => {
         if (chunks) {
-          const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+          const blob = new Blob(chunks, { type: "audio/webm" });
           const audioURL = URL.createObjectURL(blob);
 
           if (audioRef.current) {
