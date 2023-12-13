@@ -122,12 +122,12 @@ const Recorder: FC = () => {
           </p>
           {isRecording && <Pulser isRecording={isRecording} />}
           {<audio ref={audioRef} controls className="hidden"></audio>}
-          <AudioPlayer
+          {!isRecording && <AudioPlayer
             isPlaying={isPlaying}
             handlePlay={handlePlay}
             handlePause={handlePause}
             timeElapsedPercentage={timeElapsedPercentage}
-          />
+          />}
           {isRecording ? (
             <Button
               title="Stop Recording"
