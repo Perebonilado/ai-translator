@@ -2,14 +2,18 @@ import React, { ElementRef, FC, useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import Container from "./Container";
 import Pulser from "./Pulser";
+import AudioPlayer from "./AudioPlayer";
 
 const Recorder: FC = () => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const [chunks, setChunks] = useState<Blob[]>([]);
   const audioRef = useRef<ElementRef<"audio">>(null);
-  const timeInterval = useRef<NodeJS.Timeout | undefined>()
+  const recordingInterval = useRef<NodeJS.Timeout | undefined>();
+  const audioPlayingInterval = useRef<NodeJS.Timeout | undefined>();
   const [recordTimeSec, setRecordTimeSec] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [timeElapsedPercentage, setTimeElapsedPercentage] = useState(0);
 
   const handleStopRecording = () => {
     setIsRecording(false);
@@ -30,10 +34,31 @@ const Recorder: FC = () => {
   };
 
   useEffect(() => {
-    if (!isRecording) {
-      clearInterval(timeInterval.current);
+    if (isPlaying && audioRef.current) {
+      audioPlayingInterval.current = setInterval(() => {
+        if (audioRef.current) {
+          const currentTime = audioRef.current.currentTime || 0;
+          const duration = audioRef.current.duration || 0;
+          const timeElapsed = currentTime / duration;
+          setTimeElapsedPercentage(timeElapsed * 100);
+          
+          if(audioRef.current.ended){
+            setIsPlaying(false)
+          }
+        }
+      }, 100);
+
     } else {
-      timeInterval.current = setInterval(() => {
+      if (audioPlayingInterval.current)
+        clearInterval(audioPlayingInterval.current);
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (!isRecording) {
+      clearInterval(recordingInterval.current);
+    } else {
+      recordingInterval.current = setInterval(() => {
         setRecordTimeSec((recordTime) => recordTime + 1);
       }, 1000);
     }
@@ -50,12 +75,11 @@ const Recorder: FC = () => {
 
         mediaRecorder.current = mediaRecorder_;
 
-        setRecordTimeSec(0)
+        setRecordTimeSec(0);
         setIsRecording(true);
         mediaRecorder.current.start();
 
-        mediaRecorder.current.onstart = (e) => {
-        };
+        mediaRecorder.current.onstart = (e) => {};
 
         const localChunks: Blob[] = [];
 
@@ -80,6 +104,15 @@ const Recorder: FC = () => {
       .padStart(2, "0")}`;
   };
 
+  const handlePlay = () => {
+    setIsPlaying(true);
+    audioRef.current?.play();
+  };
+  const handlePause = () => {
+    setIsPlaying(false);
+    audioRef.current?.pause();
+  };
+
   return (
     <Container>
       <div className="flex items-center justify-center h-screen">
@@ -88,7 +121,13 @@ const Recorder: FC = () => {
             {handleFormatRecordTime()}
           </p>
           {isRecording && <Pulser isRecording={isRecording} />}
-          {!isRecording && <audio ref={audioRef} controls></audio>}
+          {<audio ref={audioRef} controls className="hidden"></audio>}
+          <AudioPlayer
+            isPlaying={isPlaying}
+            handlePlay={handlePlay}
+            handlePause={handlePause}
+            timeElapsedPercentage={timeElapsedPercentage}
+          />
           {isRecording ? (
             <Button
               title="Stop Recording"
