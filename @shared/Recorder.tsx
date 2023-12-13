@@ -18,6 +18,9 @@ const Recorder: FC = () => {
   const handleStopRecording = () => {
     setIsRecording(false);
     mediaRecorder.current?.stop();
+    mediaRecorder.current?.stream
+      .getAudioTracks()
+      .forEach((track) => track.stop());
 
     if (mediaRecorder.current) {
       mediaRecorder.current.onstop = (e) => {
@@ -41,13 +44,12 @@ const Recorder: FC = () => {
           const duration = audioRef.current.duration || 0;
           const timeElapsed = currentTime / duration;
           setTimeElapsedPercentage(timeElapsed * 100);
-          
-          if(audioRef.current.ended){
-            setIsPlaying(false)
+
+          if (audioRef.current.ended) {
+            setIsPlaying(false);
           }
         }
       }, 100);
-
     } else {
       if (audioPlayingInterval.current)
         clearInterval(audioPlayingInterval.current);
@@ -122,12 +124,14 @@ const Recorder: FC = () => {
           </p>
           {isRecording && <Pulser isRecording={isRecording} />}
           {<audio ref={audioRef} controls className="hidden"></audio>}
-          {!isRecording && <AudioPlayer
-            isPlaying={isPlaying}
-            handlePlay={handlePlay}
-            handlePause={handlePause}
-            timeElapsedPercentage={timeElapsedPercentage}
-          />}
+          {!isRecording && (
+            <AudioPlayer
+              isPlaying={isPlaying}
+              handlePlay={handlePlay}
+              handlePause={handlePause}
+              timeElapsedPercentage={timeElapsedPercentage}
+            />
+          )}
           {isRecording ? (
             <Button
               title="Stop Recording"
