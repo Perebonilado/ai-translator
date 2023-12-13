@@ -75,9 +75,7 @@ const Recorder: FC = () => {
           video: false,
         });
 
-        const mediaRecorder_ = new MediaRecorder(audioStream, {
-          mimeType: "audio/webm",
-        });
+        const mediaRecorder_ = new MediaRecorder(audioStream);
 
         mediaRecorder.current = mediaRecorder_;
 
