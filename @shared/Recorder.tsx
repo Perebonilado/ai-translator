@@ -107,8 +107,12 @@ const Recorder: FC = () => {
   };
 
   const handlePlay = () => {
-    setIsPlaying(true);
-    audioRef.current?.play();
+    try {
+      setIsPlaying(true);
+      audioRef.current?.play();
+    } catch (error) {
+      alert(error);
+    }
   };
   const handlePause = () => {
     setIsPlaying(false);
